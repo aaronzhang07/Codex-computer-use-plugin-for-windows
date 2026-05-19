@@ -1,0 +1,27 @@
+{
+  "name": "computer-use-for-windows",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A local Codex plugin that exposes Windows desktop automation tools over MCP.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aaronzhang07/Codex-computer-use-plugin-for-windows.git"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node ./scripts/mcp-server.js",
+    "check": "node --check ./scripts/mcp-server.js && node --check ./scripts/smoke-test.mjs && node --check ./scripts/doctor-smoke-test.mjs && node --check ./scripts/backend-smoke-test.mjs && node --check ./scripts/input-smoke-test.mjs && node --check ./scripts/mouse-smoke-test.mjs",
+    "smoke": "node ./scripts/smoke-test.mjs",
+    "smoke:doctor": "node ./scripts/doctor-smoke-test.mjs",
+    "smoke:backend": "node ./scripts/backend-smoke-test.mjs",
+    "smoke:input": "node ./scripts/input-smoke-test.mjs",
+    "smoke:mouse": "node ./scripts/mouse-smoke-test.mjs",
+    "test": "npm run check && npm run smoke:doctor && npm run smoke && npm run smoke:backend && npm run smoke:input && npm run smoke:mouse",
+    "cleanup": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/cleanup.ps1",
+    "cleanup:dry": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/cleanup.ps1 -DryRun"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

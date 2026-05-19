@@ -1,0 +1,10 @@
+.screenshots/
+.scratch/
+node_modules/
+npm-debug.log*
+.backup/
+.env
+.env.*
+*.log
+*.png
+*.tmp

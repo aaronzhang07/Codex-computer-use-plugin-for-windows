@@ -1,0 +1,42 @@
+{
+  "name": "computer-use-for-windows",
+  "version": "0.1.0",
+  "description": "Local Windows computer control tools for Codex via screenshots, mouse, keyboard, and clipboard actions.",
+  "author": {
+    "name": "aaronzhang07",
+    "email": "",
+    "url": "https://github.com/aaronzhang07"
+  },
+  "homepage": "https://github.com/aaronzhang07/Codex-computer-use-plugin-for-windows",
+  "repository": "https://github.com/aaronzhang07/Codex-computer-use-plugin-for-windows",
+  "license": "MIT",
+  "keywords": [
+    "windows",
+    "computer-use",
+    "automation",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "computer_use_for_windows",
+    "shortDescription": "Control a Windows desktop from Codex with local safety boundaries.",
+    "longDescription": "Adds local Windows desktop automation primitives for screenshots, cursor movement, clicking, typing, shortcut keys, and clipboard operations through a small MCP server.",
+    "developerName": "aaronzhang07",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/aaronzhang07/Codex-computer-use-plugin-for-windows",
+    "privacyPolicyURL": "https://github.com/aaronzhang07/Codex-computer-use-plugin-for-windows",
+    "termsOfServiceURL": "https://github.com/aaronzhang07/Codex-computer-use-plugin-for-windows",
+    "defaultPrompt": [
+      "Take a screenshot and describe the active window.",
+      "Click the visible button at these coordinates.",
+      "Type this text into the focused app."
+    ],
+    "brandColor": "#2563EB"
+  }
+}
