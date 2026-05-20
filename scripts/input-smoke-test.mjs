@@ -132,22 +132,34 @@ if (!Number.isInteger(processId)) {
 }
 
 try {
-  const focus = await focusProcess(processId);
+  const visibleWindow = await getVisibleWindow(processId);
+  const focus = await runBackend("focus_window", { handle: visibleWindow.handle });
   const focusedWindow = focus.activeWindow?.rect?.width > 100 ? focus.activeWindow : focus.window;
   const window = focusedWindow?.rect?.width > 100 && focusedWindow?.rect?.height > 100
     ? focusedWindow
-    : await getVisibleWindow(processId);
+    : visibleWindow;
   const rect = window.rect;
   const clickX = Math.round(rect.left + rect.width / 2);
   const clickY = Math.round(rect.top + Math.max(120, rect.height / 3));
+  async function focusTargetWindow() {
+    const result = await runBackend("focus_window", { handle: window.handle });
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 150));
+    return result;
+  }
 
-  const click = await runBackend("mouse_click", { x: clickX, y: clickY, button: "left", count: 1 });
+  const expectedWindowTitle = "input-smoke";
+  await focusTargetWindow();
+  const targetWindowHandle = window.handle;
+  const click = await runBackend("mouse_click", { x: clickX, y: clickY, button: "left", count: 1, expectedWindowTitle, targetWindowHandle });
   await new Promise((resolvePromise) => setTimeout(resolvePromise, 250));
-  const selectAll = await runBackend("key_press", { keys: "Ctrl+A" });
-  const typed = await runBackend("type_text", { text: marker, targetWindowHandle: window.handle });
+  await focusTargetWindow();
+  const selectAll = await runBackend("key_press", { keys: "Ctrl+A", expectedWindowTitle, targetWindowHandle });
+  await focusTargetWindow();
+  const typed = await runBackend("type_text", { text: marker, targetWindowHandle, expectedWindowTitle });
   await new Promise((resolvePromise) => setTimeout(resolvePromise, 250));
   const focusedText = await readWindowText(window.handle);
-  const savedKeys = await runBackend("key_press", { keys: "Ctrl+S" });
+  await focusTargetWindow();
+  const savedKeys = await runBackend("key_press", { keys: "Ctrl+S", expectedWindowTitle, targetWindowHandle });
   await new Promise((resolvePromise) => setTimeout(resolvePromise, 700));
 
   const saved = readFileSync(scratchFile, "utf8").replace(/^\uFEFF/, "");

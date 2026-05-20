@@ -583,6 +583,36 @@ function Invoke-GetActiveWindow {
   }
 }
 
+function Assert-ExpectedWindow($InputObject) {
+  $expectedWindowTitle = [string](Get-ArgValue $InputObject "expectedWindowTitle" "")
+  $targetWindowHandle = Get-ArgValue $InputObject "targetWindowHandle"
+  $expectedHandle = $null
+  if ($null -ne $targetWindowHandle) {
+    $expectedHandle = [int64]$targetWindowHandle
+    $target = New-Object System.IntPtr -ArgumentList $expectedHandle
+    if ($target -ne [IntPtr]::Zero) {
+      [void][NativeWindow]::ShowWindow($target, 5)
+      [void][NativeWindow]::SetForegroundWindow($target)
+      Start-Sleep -Milliseconds 150
+    }
+  } elseif ([string]::IsNullOrWhiteSpace($expectedWindowTitle)) {
+    return
+  }
+
+  $active = Invoke-GetActiveWindow
+  if ($null -ne $expectedHandle -and $active.ok -eq $true -and [int64]$active.window.handle -eq $expectedHandle) {
+    return
+  }
+  if ([string]::IsNullOrWhiteSpace($expectedWindowTitle)) {
+    throw "Active window does not match targetWindowHandle '$expectedHandle'"
+  }
+  $title = if ($null -ne $active.window) { [string]($active.window.title) } else { "" }
+  $displayTitle = if ([string]::IsNullOrWhiteSpace($title)) { "unknown" } else { $title }
+  if ($active.ok -ne $true -or $title -notmatch $expectedWindowTitle) {
+    throw "Active window does not match expectedWindowTitle '$expectedWindowTitle': $displayTitle"
+  }
+}
+
 function Invoke-FocusWindow($InputObject) {
   $target = [IntPtr]::Zero
   $handle = Get-ArgValue $InputObject "handle"
@@ -768,6 +798,7 @@ function Invoke-Screenshot($InputObject) {
 }
 
 function Invoke-MouseMove($InputObject) {
+  Assert-ExpectedWindow $InputObject
   Set-CursorPosition -X ([int](Get-ArgValue $InputObject "x")) -Y ([int](Get-ArgValue $InputObject "y"))
   return [pscustomobject]@{
     ok = $true
@@ -776,6 +807,7 @@ function Invoke-MouseMove($InputObject) {
 }
 
 function Invoke-MouseClick($InputObject) {
+  Assert-ExpectedWindow $InputObject
   $x = Get-ArgValue $InputObject "x"
   $y = Get-ArgValue $InputObject "y"
   if ($null -ne $x -and $null -ne $y) {
@@ -806,6 +838,7 @@ function Invoke-MouseClick($InputObject) {
 }
 
 function Invoke-MouseDrag($InputObject) {
+  Assert-ExpectedWindow $InputObject
   $fromX = [int](Get-ArgValue $InputObject "fromX")
   $fromY = [int](Get-ArgValue $InputObject "fromY")
   $toX = [int](Get-ArgValue $InputObject "toX")
@@ -835,6 +868,7 @@ function Invoke-MouseDrag($InputObject) {
 }
 
 function Invoke-MouseScroll($InputObject) {
+  Assert-ExpectedWindow $InputObject
   $x = Get-ArgValue $InputObject "x"
   $y = Get-ArgValue $InputObject "y"
   if ($null -ne $x -and $null -ne $y) {
@@ -855,6 +889,7 @@ function Invoke-MouseScroll($InputObject) {
 }
 
 function Invoke-TypeText($InputObject) {
+  Assert-ExpectedWindow $InputObject
   $text = [string](Get-ArgValue $InputObject "text" "")
   $targetWindowHandle = Get-ArgValue $InputObject "targetWindowHandle"
   $automationSet = $false
@@ -959,6 +994,7 @@ function Convert-KeyChord($Keys) {
 }
 
 function Invoke-KeyPress($InputObject) {
+  Assert-ExpectedWindow $InputObject
   $requestedKeys = [string](Get-ArgValue $InputObject "keys" "")
   try {
     Send-KeyChordNative $requestedKeys

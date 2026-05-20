@@ -83,6 +83,7 @@ const tools = [
       properties: {
         x: { type: "integer" },
         y: { type: "integer" },
+        targetWindowHandle: { type: "integer", description: "Optional top-level window handle to focus before the action." },
         expectedWindowTitle: { type: "string" },
         confirm: { type: "boolean" }
       }
@@ -98,6 +99,7 @@ const tools = [
         y: { type: "integer" },
         button: { type: "string", enum: ["left", "right", "middle"], default: "left" },
         count: { type: "integer", minimum: 1, maximum: 3, default: 1 },
+        targetWindowHandle: { type: "integer", description: "Optional top-level window handle to focus before the action." },
         expectedWindowTitle: { type: "string" },
         confirm: { type: "boolean" }
       }
@@ -115,6 +117,7 @@ const tools = [
         toX: { type: "integer" },
         toY: { type: "integer" },
         durationMs: { type: "integer", minimum: 50, maximum: 5000, default: 400 },
+        targetWindowHandle: { type: "integer", description: "Optional top-level window handle to focus before the action." },
         expectedWindowTitle: { type: "string" },
         confirm: { type: "boolean" }
       }
@@ -130,6 +133,7 @@ const tools = [
         y: { type: "integer" },
         delta: { type: "integer", description: "Wheel delta. Positive scrolls up, negative scrolls down. One notch is 120." },
         clicks: { type: "integer", description: "Alternative to delta. Positive scrolls up, negative scrolls down." },
+        targetWindowHandle: { type: "integer", description: "Optional top-level window handle to focus before the action." },
         expectedWindowTitle: { type: "string" },
         confirm: { type: "boolean" }
       }
@@ -157,6 +161,7 @@ const tools = [
       required: ["keys"],
       properties: {
         keys: { type: "string" },
+        targetWindowHandle: { type: "integer", description: "Optional top-level window handle to focus before the action." },
         expectedWindowTitle: { type: "string" },
         confirm: { type: "boolean" }
       }

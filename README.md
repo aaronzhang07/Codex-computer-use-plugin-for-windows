@@ -53,8 +53,8 @@ Restart Codex if the plugin picker does not refresh immediately, then type `@com
 - `mouse_click`: click an absolute coordinate or the current cursor position.
 - `mouse_drag`: drag between two absolute coordinates.
 - `mouse_scroll`: scroll the mouse wheel at the current or specified coordinate.
-- `type_text`: type text into the focused application.
-- `key_press`: send a key or key chord such as `Ctrl+L`.
+- `type_text`: type text into the focused application; optionally bind the write to a known `targetWindowHandle`.
+- `key_press`: send a key or key chord such as `Ctrl+L`; optionally guard the target window before sending.
 - `clipboard_set`: set Unicode text on the Windows clipboard.
 - `clipboard_clear`: clear the Windows clipboard.
 - `clipboard_get`: read Unicode text from the Windows clipboard.
@@ -81,6 +81,8 @@ The MCP server intentionally avoids third-party Node dependencies in this first 
 - `WINDOWS_COMPUTER_USE_CONFIRM_INPUT=true`: input tools require `confirm: true`.
 - `WINDOWS_COMPUTER_USE_ALLOW_WINDOW=<regex>`: mouse/keyboard tools only run when the active window title or process name matches.
 - `WINDOWS_COMPUTER_USE_BLOCK_WINDOW=<regex>`: mouse/keyboard tools are blocked when the active window title or process name matches.
+- `expectedWindowTitle`: per-call guard for mouse, keyboard, and text tools.
+- `targetWindowHandle`: per-call handle that lets guarded input tools refocus and verify a known target window before acting.
 
 ## Temporary Files and Cleanup
 

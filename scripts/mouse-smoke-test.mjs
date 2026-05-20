@@ -101,26 +101,39 @@ if (!Number.isInteger(processId)) {
 
 try {
   const originalCursor = await runBackend("get_cursor");
-  const focus = await runBackend("focus_window", { title: "mouse-smoke" });
+  const visibleWindow = await getVisibleWindow(processId);
+  const focus = await runBackend("focus_window", { handle: visibleWindow.handle });
   const focusedWindow = focus.activeWindow?.rect?.width > 100 ? focus.activeWindow : focus.window;
   const window = focusedWindow?.rect?.width > 100 && focusedWindow?.rect?.height > 100
     ? focusedWindow
-    : await getVisibleWindow(processId);
+    : visibleWindow;
   const rect = window.rect;
   const clickX = Math.round(rect.left + rect.width / 2);
   const clickY = Math.round(rect.top + Math.max(120, rect.height / 3));
   const dragFromX = Math.round(rect.left + rect.width * 0.35);
   const dragToX = Math.round(rect.left + rect.width * 0.65);
   const dragY = Math.round(rect.top + rect.height * 0.55);
+  async function focusTargetWindow() {
+    const result = await runBackend("focus_window", { handle: window.handle });
+    await new Promise((resolvePromise) => setTimeout(resolvePromise, 150));
+    return result;
+  }
 
-  const click = await runBackend("mouse_click", { x: clickX, y: clickY, button: "left", count: 1 });
-  const scroll = await runBackend("mouse_scroll", { x: clickX, y: clickY, clicks: -1 });
+  const expectedWindowTitle = "mouse-smoke";
+  const targetWindowHandle = window.handle;
+  await focusTargetWindow();
+  const click = await runBackend("mouse_click", { x: clickX, y: clickY, button: "left", count: 1, expectedWindowTitle, targetWindowHandle });
+  await focusTargetWindow();
+  const scroll = await runBackend("mouse_scroll", { x: clickX, y: clickY, clicks: -1, expectedWindowTitle, targetWindowHandle });
+  await focusTargetWindow();
   const drag = await runBackend("mouse_drag", {
     fromX: dragFromX,
     fromY: dragY,
     toX: dragToX,
     toY: dragY,
-    durationMs: 120
+    durationMs: 120,
+    expectedWindowTitle,
+    targetWindowHandle
   });
 
   await closeProcess(processId);
